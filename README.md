@@ -135,6 +135,10 @@ The paper also evaluates Qwen3-4B-Base fine-tuned on OpenThoughts3 with five spe
 
 The current release provides the initial three-specialist application code and its reference configuration. Industrial datasets and the customized distributed training runtime are proprietary. Dataset paths, task rules, tool services, and runtime adapters are supplied by the user. The paper's six-specialist and five-domain experiments use the corresponding configurations and integrations described in the paper.
 
+## Contributors
+
+- [onesearch family](https://github.com/benchen4395)
+
 ## Citation
 
 ```bibtex
