@@ -1,0 +1,157 @@
+{
+  "repo": "/path/to/repo",
+  "agent_root": "/path/to/agent_root",
+  "step2_root": "/path/to/step2_root",
+  "nodes": 5,
+  "gpus_per_node": 8,
+  "teacher_nodes": 1,
+  "train_tp": 8,
+  "expert_parallel": 8,
+  "rollout_tp": 2,
+  "global_batch_size": 128,
+  "epochs": 3,
+  "learning_rate": 1e-06,
+  "save_every": 1,
+  "max_sequence_tokens": 32768,
+  "max_images": 8,
+  "max_image_side": 1024,
+  "max_turns": 12,
+  "max_new_tokens": 8192,
+  "temperature": 0.8,
+  "top_p": 0.95,
+  "top_k": 20,
+  "agent_workers": 4,
+  "max_running_requests": 8,
+  "rollout_memory_fraction": 0.6,
+  "teacher_memory_fraction": 0.6,
+  "query_timeout_seconds": 1200,
+  "max_replacements": 32,
+  "tool_timeout_seconds": 90,
+  "tool_response_chars": 30000,
+  "max_calls_per_turn": 16,
+  "wandb_project": "branch-and-consolidate-initial",
+  "hf_overrides": {},
+  "weight_decay": 0.01,
+  "clip_grad": 1.0,
+  "max_new_tokens_by_domain": {
+    "reasoning": 8192,
+    "agent": 8192
+  },
+  "distillation": {
+    "loss_mode": "reverse_kl_topk_tail",
+    "topk": 32,
+    "loss_max_clamp": 10.0,
+    "log_prob_min_clamp": null,
+    "chunk_tokens": 1024,
+    "probability_floor": 1e-08
+  },
+  "balanced_routes": true,
+  "student": "/path/to/avg4-initialization",
+  "teacher": "/path/to/business_agent-specialist",
+  "teachers": {
+    "business_reasoning": {
+      "path": "/path/to/business_reasoning-specialist",
+      "replicas": 1
+    },
+    "general": {
+      "path": "/path/to/general-specialist",
+      "replicas": 1
+    },
+    "business_agent": {
+      "path": "/path/to/business_agent-specialist",
+      "replicas": 1
+    },
+    "self": {
+      "path": "/path/to/avg4-initialization",
+      "replicas": 1
+    }
+  },
+  "data_root": "/path/to/data_root",
+  "output_root": "/path/to/output_root",
+  "seed": 42,
+  "domains": [
+    "reasoning",
+    "agent"
+  ],
+  "experiment": "exp3-1",
+  "loss_aggregation": "route_query_mean",
+  "route_loss_coefficients": {
+    "business_reasoning": 0.3333333333333333,
+    "general": 0.3333333333333333,
+    "business_agent": 0.3333333333333333,
+    "self": 0.3333333333333333
+  },
+  "wandb_run_name": "three-specialists-self",
+  "teacher_replicas": 4,
+  "final_only_checkpoint": false,
+  "preserve_order": true,
+  "route_require_equal_queries": false,
+  "save_epoch_boundaries": false,
+  "wandb_group": "exp3",
+  "frozen_self_reference": "/path/to/avg4-initialization",
+  "teacher_route_roles": {
+    "business_reasoning": "external_business_reasoning",
+    "general": "external_general",
+    "business_agent": "external_business_agent",
+    "self": "fixed_mean_self"
+  },
+  "teacher_roles": {
+    "business_reasoning": "external_business_reasoning",
+    "general": "external_general",
+    "business_agent": "external_business_agent",
+    "self": "fixed_mean_self"
+  },
+  "trajectory_sources": {
+    "reasoning": "student_rollout",
+    "agent": "student_rollout"
+  },
+  "teacher_replicas_by_route": {
+    "business_reasoning": 1,
+    "general": 1,
+    "business_agent": 1,
+    "self": 1
+  },
+  "self_reference_model": "/path/to/avg4-initialization",
+  "checkpoint_schedule": {
+    "enabled": true,
+    "count": 20,
+    "start_fraction": 0.05,
+    "progress_basis": "normal_external_exposures"
+  },
+  "sampling_order_file": "/path/to/sampling_order_file",
+  "online_replay": {
+    "enabled": true,
+    "epochs": 3,
+    "external_self_ratio": 1,
+    "route_sizes": {
+      "business_reasoning": 1180,
+      "general": 1180,
+      "business_agent": 1180
+    },
+    "fresh_external_queries": 10620,
+    "self_strata_mix": {
+      "business_agent": 393,
+      "business_reasoning": 394,
+      "general": 393
+    },
+    "replay_fraction": 0.5,
+    "target_by_total": "external",
+    "warmup_updates": 17
+  },
+  "feedback_judge": {
+    "provider": "internal",
+    "base_url": "http://judge.example.invalid/v1",
+    "judge_model": "your-judge-model",
+    "concurrency": 32,
+    "timeout_seconds": 180,
+    "temperature": 0.0,
+    "max_tokens": 1024,
+    "enable_thinking": false,
+    "api_key_env": "JUDGE_API_KEY",
+    "task_rubrics": {},
+    "use_proxy": false,
+    "strict_response_model": true,
+    "system_prompt": "<SUPPLY_YOUR_PRIVATE_JUDGE_SYSTEM_PROMPT>"
+  },
+  "feedback_reference_index": "/path/to/feedback_reference_index"
+}
