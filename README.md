@@ -1,4 +1,4 @@
-# Branch and Consolidate — Initial VERL Implementation
+# Branch and Consolidate — VERL Implementation
 
 This release contains the initial implementation used with our own datasets, with three specialist routes (business reasoning, general reasoning, and business Agent tasks) and a frozen self teacher.
 
