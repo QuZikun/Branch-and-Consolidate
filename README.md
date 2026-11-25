@@ -6,8 +6,6 @@
 [![Paper PDF](https://img.shields.io/badge/Paper-PDF-red.svg)](https://arxiv.org/pdf/2611.32515)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
-Zihan Liang, Zikun Qu, Ben Chen, Fan Yang, Wenwu Ou, Min Zhang, Zhongxiang Dai, and Xinchao Wang
-
 **Consolidate divergent specialists into a shared student through merged initialization, selected queries, error replay, and balanced distillation, then refine the remaining capability gaps.**
 
 ![Overview of branching, consolidation, and targeted refinement](assets/overview.png)
