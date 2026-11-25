@@ -25,7 +25,7 @@ def question_key(text):
     return ' '.join(unicodedata.normalize('NFKC', text).split())
 
 
-def audit_pool(data_root, bench_root, datasets, output, step2_root):
+def audit_pool(data_root, bench_root, datasets, output, rollout_adapter_root):
     """Verify bytes/schema, and compare exact question + ordered image paths.
 
     No image opens/stat/hash: copies of an image under different paths and
@@ -54,7 +54,7 @@ def audit_pool(data_root, bench_root, datasets, output, step2_root):
             keys.setdefault(key, []).append(row['sample_id'])
             if paths:
                 image_keys.setdefault(paths, []).append(row['sample_id'])
-    sys.path.insert(0, str(step2_root))
+    sys.path.insert(0, str(rollout_adapter_root))
     from runner.data import normalize
     matches, same_paths = [], []
     with (data_root / 'train.jsonl').open('rb') as stream:
@@ -100,7 +100,7 @@ def prepare(config_path, project, root):
     data_root = project_path(config['data_root'], project)
     bench_root = project / 'mopd_bench'
     audit = audit_pool(data_root, bench_root, evaluation['datasets'].split(','), root,
-                      project_path(config['step2_root'], project))
+                      project_path(config['rollout_adapter_root'], project))
     contract = {'config': config, 'project': str(project), 'audit': audit}
     contract_path = root / 'pipeline_contract.json'
     if contract_path.exists():

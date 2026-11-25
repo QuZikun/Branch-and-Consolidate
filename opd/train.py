@@ -147,9 +147,9 @@ def probe(settings, hashes):
         import requests
         with requests.Session() as client:
             client.trust_env = False
-            response = client.post(os.environ['POI_SEARCH_URL'], json={'query': os.environ['OPD_POI_PROBE_QUERY'], 'topk': 1}, timeout=(5, 60))
+            response = client.post(os.environ['AGENT_TOOL_URL'], json={'query': os.environ['TOOL_PROBE_QUERY'], 'topk': 1}, timeout=(5, 60))
             response.raise_for_status()
-            require(bool(response.json().get('results')), 'POI query failed on ' + socket.gethostname())
+            require(bool(response.json().get('results')), 'Agent tool probe returned no results on ' + socket.gethostname())
     return {'tool_schemas': len(tools.schemas) if tools else 0, 'hostname': socket.gethostname(), 'cuda': check_cuda_build(),
             'communication': communication, 'rendezvous': rendezvous,
             'versions': {p: importlib.metadata.version(p) for p in ('ray', 'torch', 'transformers', 'sglang', 'mbridge', 'megatron-core')}}
@@ -189,7 +189,7 @@ def main():
         if (run / 'result.json').exists() and read_json(run / 'result.json').get('state') == 'complete':
             print('Already completed: ' + str(run), flush=True)
             return
-        sys.path[:0] = [s['repo'], s['agent_root'], s['step2_root']]
+        sys.path[:0] = [s['repo'], s['agent_root'], s['rollout_adapter_root']]
         from opd.native import cuda_build_env, logging_env
         os.environ.update(cuda_build_env(os.environ))
         from omegaconf import OmegaConf
@@ -236,26 +236,26 @@ def main():
             return
         require(os.environ.get('WANDB_API_KEY'), 'Set WANDB_API_KEY in the shell before starting')
         if 'agent' in active_domains(s):
-            require(os.environ.get('POI_SEARCH_URL'), 'Run scripts/run_opd_pair.py to prepare services, or set POI_SEARCH_URL')
+            require(os.environ.get('AGENT_TOOL_URL'), 'Set AGENT_TOOL_URL to the agent tool endpoint')
         import ray
         from verl.trainer.constants_ppo import get_ppo_ray_runtime_env
         from opd.network import apply_node_environment, check_collectives, PREFIXES
         env = get_ppo_ray_runtime_env(config)
         worker_env = env.setdefault('env_vars', {})
-        require(os.environ.get('OPD_NETWORK_MANIFEST'), 'Use scripts/run_opd_pair.py to capture platform network settings')
-        worker_env['OPD_NETWORK_MANIFEST'] = os.environ['OPD_NETWORK_MANIFEST']
+        require(os.environ.get('DIST_RUNTIME_CONFIG'), 'Set DIST_RUNTIME_CONFIG to the distributed runtime configuration file')
+        worker_env['DIST_RUNTIME_CONFIG'] = os.environ['DIST_RUNTIME_CONFIG']
         worker_env['OPD_DISTILLATION_LOSS_MODE'] = distillation_settings(s)['loss_mode']
         worker_env['OPD_COMM_TIMEOUT_SECONDS'] = os.environ.get('OPD_COMM_TIMEOUT_SECONDS', '120')
         env['worker_process_setup_hook'] = apply_node_environment
-        worker_env['PYTHONPATH'] = os.pathsep.join([str(PROJECT), s['repo'], s['agent_root'], s['step2_root'], os.environ.get('PYTHONPATH', '')])
+        worker_env['PYTHONPATH'] = os.pathsep.join([str(PROJECT), s['repo'], s['agent_root'], s['rollout_adapter_root'], os.environ.get('PYTHONPATH', '')])
         worker_env.update(cuda_build_env(os.environ))
         # Internal services bypass proxy settings. W&B credentials/proxies go only to the logging actor.
         worker_env.update({'NO_PROXY': '*', 'no_proxy': '*', 'PYTHONUNBUFFERED': '1'})
         for key, value in os.environ.items():
-            if key.startswith(('NVTE_', 'SGL_', 'VIDI_', 'POI_')) or key == 'CUDA_DEVICE_MAX_CONNECTIONS':
+            if key.startswith(('NVTE_', 'SGL_', 'VIDI_', 'AGENT_TOOL_')) or key in ('CUDA_DEVICE_MAX_CONNECTIONS', 'TOOL_PROBE_QUERY'):
                 worker_env[key] = value
         # Set LD_PRELOAD before Ray starts Python, not in the post-start hook.
-        worker_env.update(read_json(os.environ['OPD_NETWORK_MANIFEST'])['loader'])
+        worker_env.update(read_json(os.environ['DIST_RUNTIME_CONFIG'])['loader'])
         # Network settings are node-specific; the setup hook supplies them.
         for key in list(worker_env):
             if key.startswith(PREFIXES):

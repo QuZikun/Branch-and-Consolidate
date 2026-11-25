@@ -1,7 +1,7 @@
 {
   "repo": "/path/to/repo",
   "agent_root": "/path/to/agent_root",
-  "step2_root": "/path/to/step2_root",
+  "rollout_adapter_root": "/path/to/rollout_adapter",
   "nodes": 5,
   "gpus_per_node": 8,
   "teacher_nodes": 1,

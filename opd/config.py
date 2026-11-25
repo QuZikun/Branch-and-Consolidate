@@ -92,7 +92,7 @@ def load_settings(path, project_root, mode, output_root=None):
     require(type(settings.get('save_epoch_boundaries', True)) is bool,
             'save_epoch_boundaries must be true or false')
     project = Path(project_root).resolve()
-    for key in ('repo', 'data_root', 'agent_root', 'step2_root', 'student', 'teacher', 'output_root'):
+    for key in ('repo', 'data_root', 'agent_root', 'rollout_adapter_root', 'student', 'teacher', 'output_root'):
         p = Path(output_root if key == 'output_root' and output_root else settings[key]).expanduser()
         settings[key] = str(p if p.is_absolute() else project / p)
     if settings.get('teachers'):

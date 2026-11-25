@@ -59,9 +59,9 @@ def capture(directory):
 
 def apply_node_environment():
     """Ray setup hook: executes before importing/constructing training workers."""
-    path = os.environ.get('OPD_NETWORK_MANIFEST')
+    path = os.environ.get('DIST_RUNTIME_CONFIG')
     if not path:
-        raise RuntimeError('Missing OPD_NETWORK_MANIFEST; launch with scripts/run_opd_pair.py')
+        raise RuntimeError('Set DIST_RUNTIME_CONFIG to the distributed runtime configuration file')
     manifest = json.loads(Path(path).read_text())
     name = socket.gethostname()
     if name not in manifest['nodes']:
@@ -82,7 +82,7 @@ def apply_node_environment():
 
 def verify_libraries():
     """Once per node, also verify the bytes of the preloaded platform library."""
-    manifest = json.loads(Path(os.environ['OPD_NETWORK_MANIFEST']).read_text())
+    manifest = json.loads(Path(os.environ['DIST_RUNTIME_CONFIG']).read_text())
     actual = loaded_communication_libraries(with_hash=True)
     for path, sha in manifest['preloaded_libraries'].items():
         if actual.get(path) != sha:
