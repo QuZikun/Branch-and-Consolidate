@@ -12,8 +12,6 @@ Our industrial datasets are company-confidential and cannot be released. This co
 
 ## Method and source
 
-The code comes from the archived `exp3-1` implementation. The historical configuration uses the equal-weight average of the original student and three specialists as the initialization. A frozen copy of that initialization acts as the self teacher. Student-generated completions receive reverse-KL supervision on the teacher's Top32 tokens and one residual probability bucket.
-
 | Component | Source |
 |---|---|
 | Checkpoint averaging | `weight_average/average_many.py` |
