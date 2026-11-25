@@ -10,7 +10,7 @@
 
 ![Overview of branching, consolidation, and targeted refinement](assets/overview.png)
 
-The paper studies specialists post-trained from a common checkpoint. Stage 1 consolidates their capabilities with a frozen self teacher to preserve existing behavior. Stage 2 re-merges selected specialists and assigns specialist or self supervision per domain using validation recovery and Top-32 overlap.
+The paper studies specialists post-trained from a common checkpoint. Stage 1 consolidates their capabilities with a frozen self teacher to preserve existing behavior. Stage 2 re-merges selected specialists and assigns specialist or self supervision per domain using validation recovery and overlap.
 
 ## What is available
 
