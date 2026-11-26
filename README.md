@@ -31,7 +31,7 @@ This release provides the initial three-specialist implementation, reusable algo
 | Setting or workflow | Release status |
 |---|---|
 | Three specialists plus a frozen self teacher | Algorithm modules and reference configuration available |
-| Six or more specialists | Extension guidance below |
+| Over a dozen specialists| Extension guidance below |
 | Top-32 overlap | Training diagnostics available, dedicated fixed-probe driver pending |
 | Stage 2 refinement | Re-merging utility and adaptation guide available, dedicated training launcher pending |
 | Qwen3-4B five-domain experiments | Described in the paper, reproduction scripts pending |
@@ -127,13 +127,15 @@ Core dependencies in `requirements.txt` cover merging and CPU tests. Distributed
 
 ## Extending the experiments
 
-For six or more specialists, extend the route definitions in `opd/online_sampling.py`, `opd/sampling.py`, `opd/balanced.py`, and `opd/experiment_controls.py`, along with the validations in `opd/config.py`. Update teacher checkpoints, pool sizes, self strata, objective coefficients, batch allocation, and runtime resources together.
+For more specialists in this codebase, extend the route definitions in `opd/online_sampling.py`, `opd/sampling.py`, `opd/balanced.py`, and `opd/experiment_controls.py`, along with the validations in `opd/config.py`. Update teacher checkpoints, pool sizes, self strata, objective coefficients, batch allocation, and runtime resources together.
 
-The paper also evaluates Qwen3-4B-Base fine-tuned on OpenThoughts3 with five specialists on **MedQA, CaseHOLD, FinQA, IFBench, and τ²-Telecom**. This setting uses 100 total updates with batch size 128, reserving the final 10 updates for refinement. The τ² route samples specialist and self dialogue contexts at random and disables error replay. MedQA and CaseHOLD retain specialist supervision after re-merging, while the remaining domains use frozen θ₁. The paper reports 95.7% recovery after consolidation and 97.5% after refinement. Experiment-specific reproduction scripts are pending.
+**Scaling to over a dozen specialists in production.** Beyond the six-specialist setting reported in the paper, the same recipe scales to over a dozen specialists in our production workflows. While this repository releases the initial VERL-based three-specialist reference implementation, our large-scale business training runs on an internal framework built on `slime`. In that framework, specialists that are not actively running inference do not occupy GPUs, making it practical to consolidate over a dozen specialists without dedicating GPU resources to idle teachers.
+
+**Open five-domain setting.** The paper also evaluates Qwen3-4B-Base fine-tuned on OpenThoughts3 with five specialists on **MedQA, CaseHOLD, FinQA, IFBench, and τ²-Telecom**. This setting uses 100 total updates with batch size 128, reserving the final 10 updates for refinement. The τ² route samples specialist and self dialogue contexts at random and disables error replay. MedQA and CaseHOLD retain specialist supervision after re-merging, while the remaining domains use frozen θ₁. The paper reports 95.7% recovery after consolidation and 97.5% after refinement. Experiment-specific reproduction scripts are pending.
 
 ## Scope and limitations
 
-The current release provides the initial three-specialist application code and its reference configuration. Industrial datasets and the customized distributed training runtime are proprietary. Dataset paths, task rules, tool services, and runtime adapters are supplied by the user. The paper's six-specialist and five-domain experiments use the corresponding configurations and integrations described in the paper.
+The current release provides the initial VERL-based three-specialist application code and its reference configuration. Industrial datasets, customized distributed runtimes, and our internal `slime`-based production framework are proprietary and cannot be released. Dataset paths, task rules, tool services, and runtime adapters are supplied by the user. The paper's six-specialist and five-domain experiments use the corresponding configurations and integrations described in the paper.
 
 ## Citation
 
